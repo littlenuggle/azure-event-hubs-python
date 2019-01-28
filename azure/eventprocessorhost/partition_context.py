@@ -23,6 +23,7 @@ class PartitionContext:
         self.offset = "-1"
         self.sequence_number = 0
         self.lease = None
+        self.event_processor_context = None
         self.pump_loop = pump_loop or asyncio.get_event_loop()
 
     def set_offset_and_sequence_number(self, event_data):
@@ -66,6 +67,7 @@ class PartitionContext:
         """
         captured_checkpoint = Checkpoint(self.partition_id, self.offset, self.sequence_number)
         await self.persist_checkpoint_async(captured_checkpoint, event_processor_context)
+        self.event_processor_context = event_processor_context
 
     async def checkpoint_async_event_data(self, event_data, event_processor_context=None):
         """
@@ -90,6 +92,7 @@ class PartitionContext:
                                                        event_data.offset.value,
                                                        event_data.sequence_number),
                                             event_processor_context)
+        self.event_processor_context = event_processor_context
 
     def to_string(self):
         """

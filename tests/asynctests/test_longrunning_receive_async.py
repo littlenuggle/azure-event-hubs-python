@@ -22,7 +22,7 @@ from azure.eventhub import EventHubClientAsync
 
 
 def get_logger(filename, level=logging.INFO):
-    azure_logger = logging.getLogger("azure")
+    azure_logger = logging.getLogger("azure.eventhub")
     azure_logger.setLevel(level)
     uamqp_logger = logging.getLogger("uamqp")
     uamqp_logger.setLevel(logging.INFO)

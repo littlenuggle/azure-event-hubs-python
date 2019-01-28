@@ -5,9 +5,9 @@
 
 import asyncio
 import base64
-import pickle
 import pytest
 import time
+import json
 from azure.common import AzureException
 
 
@@ -84,17 +84,18 @@ def test_checkpointing(eph, storage_clm):
     assert local_checkpoint.offset == "-1"
     lease = loop.run_until_complete(storage_clm.get_lease_async("1"))
     loop.run_until_complete(storage_clm.acquire_lease_async(lease))
+    assert lease.event_processor_context is None
+
     event_processor_context = {'some_string_data': 'abc', 'some_int_data': 123, 'a_list': [42]}
-    event_processor_context_pickled = pickle.dumps(event_processor_context)
-    event_processor_context_asstring = base64.b64encode(event_processor_context_pickled)
+    event_processor_context_pickled = json.dumps(event_processor_context)
     loop.run_until_complete(storage_clm.update_checkpoint_async(
-        lease, local_checkpoint, event_processor_context_asstring))
+        lease, local_checkpoint, event_processor_context_pickled))
+
     cloud_lease = loop.run_until_complete(storage_clm.get_lease_async("1"))
-    cloud_event_processor_context_asstring = pickle.loads(cloud_lease.event_processor_context)
-    cloud_event_processor_context_pickled = base64.b64decode(cloud_event_processor_context_asstring)
-    cloud_event_processor_context = pickle.loads(cloud_event_processor_context_pickled)
+    cloud_event_processor_context_asstring = cloud_lease.event_processor_context
+    cloud_event_processor_context = json.loads(cloud_event_processor_context_asstring)
     assert cloud_event_processor_context['some_string_data'] == 'abc'
-    assert cloud_event_processor_context['some_int_data'] == '123'
+    assert cloud_event_processor_context['some_int_data'] == 123
     assert cloud_event_processor_context['a_list'] == [42]
 
     cloud_checkpoint = loop.run_until_complete(storage_clm.get_checkpoint_async("1"))

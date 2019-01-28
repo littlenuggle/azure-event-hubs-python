@@ -7,7 +7,7 @@ import sys
 import logging
 
 def get_logger(level):
-    azure_logger = logging.getLogger("azure")
+    azure_logger = logging.getLogger("azure.eventhub")
     azure_logger.setLevel(level)
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s'))

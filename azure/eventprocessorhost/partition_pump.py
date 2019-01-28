@@ -48,6 +48,7 @@ class PartitionPump():
         """
         if self.partition_context:
             self.partition_context.lease = new_lease
+            self.partition_context.event_processor_context = new_lease.event_processor_context
 
     async def open_async(self):
         """
@@ -59,13 +60,10 @@ class PartitionPump():
                                                   self.host.eh_config.consumer_group,
                                                   self.loop)
         self.partition_context.lease = self.lease
+        self.partition_context.event_processor_context = self.lease.event_processor_context
         self.processor = self.host.event_processor(self.host.event_processor_params)
         try:
-            try:
-                event_processor_context = self.lease.event_processor_context
-                await self.processor.open_with_context_async(self.partition_context, event_processor_context)
-            except NotImplementedError:
-                await self.processor.open_async(self.partition_context)
+            await self.processor.open_async(self.partition_context)
         except Exception as err:  # pylint: disable=broad-except
             # If the processor won't create or open, only thing we can do here is pass the buck.
             # Null it out so we don't try to operate on it further.
