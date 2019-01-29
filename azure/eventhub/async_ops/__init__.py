@@ -52,7 +52,7 @@ class EventHubClientAsync(EventHubClient):
             token = self.sas_token() if callable(self.sas_token) else self.sas_token
             try:
                 expiry = int(parse_sas_token(token)['se'])
-            except (KeyError, TypeError):
+            except (KeyError, TypeError, IndexError):
                 raise ValueError("Supplied SAS token has no valid expiry value.")
             return authentication.SASTokenAsync(
                 self.auth_uri, self.auth_uri, token,
