@@ -3,12 +3,12 @@
 Release History
 ===============
 
-1.3.0 (unreleased)
+1.3.0 (2019-01-29)
 ++++++++++++++++++
 
 **Bugfixes**
 
-- Added support for auto reconnect on token expiration (issue #89)
+- Added support for auto reconnect on token expiration and other auth errors (issue #89).
 
 **Features**
 

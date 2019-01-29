@@ -92,8 +92,8 @@ class EventHubClient(object):
     """
 
     def __init__(
-            self, address, username=None, password=None, sas_token=None,
-            debug=False, http_proxy=None, auth_timeout=60):
+            self, address, username=None, password=None, debug=False,
+            http_proxy=None, auth_timeout=60, sas_token=None):
         """
         Constructs a new EventHubClient with the given address URL.
 
@@ -116,6 +116,10 @@ class EventHubClient(object):
         :param auth_timeout: The time in seconds to wait for a token to be authorized by the service.
          The default value is 60 seconds. If set to 0, no timeout will be enforced from the client.
         :type auth_timeout: int
+        :param sas_token: A SAS token or function that returns a SAS token. If a function is supplied,
+         it will be used to retrieve subsequent tokens in the case of token expiry. The function should
+         take no arguments.
+        :type sas_token: str or callable
         """
         self.container_id = "eventhub.pysdk-" + str(uuid.uuid4())[:8]
         self.sas_token = sas_token
@@ -129,7 +133,7 @@ class EventHubClient(object):
         password = password or url_password
         if (not username or not password) and not sas_token:
             raise ValueError("Please supply either username and password, or a SAS token")
-        self.auth_uri = "amqps://{}{}".format(self.address.hostname, self.address.path)
+        self.auth_uri = "sb://{}{}".format(self.address.hostname, self.address.path)
         self._auth_config = {'username': username, 'password': password}
         self.get_auth = functools.partial(self._create_auth)
         self.debug = debug
