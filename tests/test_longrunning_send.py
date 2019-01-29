@@ -78,6 +78,9 @@ def main(client, args):
 
 
 def test_long_running_send(connection_str):
+    if sys.platform.startswith('darwin'):
+        import pytest
+        pytest.skip("Skipping on OSX")
     parser = argparse.ArgumentParser()
     parser.add_argument("--duration", help="Duration in seconds of the test", type=int, default=30)
     parser.add_argument("--payload", help="payload size", type=int, default=512)
