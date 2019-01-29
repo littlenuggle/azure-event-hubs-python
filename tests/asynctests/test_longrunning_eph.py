@@ -62,6 +62,8 @@ class EventProcessor(AbstractEventProcessor):
         """
         Called by processor host to initialize the event processor.
         """
+        assert hasattr(context, 'event_processor_context')
+        assert context.event_processor_context is None
         logger.info("Connection established {}. State {}".format(
             context.partition_id, context.event_processor_context))
 
@@ -87,6 +89,7 @@ class EventProcessor(AbstractEventProcessor):
         :param messages: The events to be processed.
         :type messages: list[~azure.eventhub.common.EventData]
         """
+        assert context.event_processor_context is None
         print("Processing id {}, offset {}, sq_number {}, state {})".format(
             context.partition_id,
             context.offset,

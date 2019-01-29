@@ -144,7 +144,7 @@ class AzureStorageCheckpointLeaseManager(AbstractCheckpointManager, AbstractLeas
             checkpoint = Checkpoint(partition_id)
         return checkpoint
 
-    async def update_checkpoint_async(self, lease, checkpoint, event_processor_context=None):
+    async def update_checkpoint_async(self, lease, checkpoint):
         """
         Update the checkpoint in the store with the offset/sequenceNumber in the provided checkpoint
         checkpoint:offset/sequeceNumber to update the store with.
@@ -158,7 +158,6 @@ class AzureStorageCheckpointLeaseManager(AbstractCheckpointManager, AbstractLeas
         new_lease.with_source(lease)
         new_lease.offset = checkpoint.offset
         new_lease.sequence_number = checkpoint.sequence_number
-        new_lease.event_processor_context = event_processor_context
         return await self.update_lease_async(new_lease)
 
     async def delete_checkpoint_async(self, partition_id):
