@@ -9,6 +9,7 @@ import os
 import pytest
 import time
 import json
+import sys
 
 from azure import eventhub
 from azure.eventhub import EventData, EventHubClient
@@ -46,6 +47,8 @@ def test_send_with_partition_key(connstr_receivers):
 
 
 def test_send_and_receive_large_body_size(connstr_receivers):
+    if sys.platform.startswith('darwin'):
+        pytest.skip("Skipping on OSX - open issue regarding message size")
     connection_str, receivers = connstr_receivers
     client = EventHubClient.from_connection_string(connection_str, debug=False)
     sender = client.add_sender()

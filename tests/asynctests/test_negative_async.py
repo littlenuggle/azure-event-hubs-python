@@ -8,6 +8,7 @@ import os
 import asyncio
 import pytest
 import time
+import sys
 
 from azure import eventhub
 from azure.eventhub import (
@@ -127,6 +128,8 @@ async def test_send_to_invalid_partitions_async(connection_str):
 
 @pytest.mark.asyncio
 async def test_send_too_large_message_async(connection_str):
+    if sys.platform.startswith('darwin'):
+        pytest.skip("Skipping on OSX - open issue regarding message size")
     client = EventHubClientAsync.from_connection_string(connection_str, debug=False)
     sender = client.add_async_sender()
     try:

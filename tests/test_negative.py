@@ -7,6 +7,7 @@
 import os
 import pytest
 import time
+import sys
 
 from azure import eventhub
 from azure.eventhub import (
@@ -114,6 +115,8 @@ def test_send_to_invalid_partitions(connection_str):
 
 
 def test_send_too_large_message(connection_str):
+    if sys.platform.startswith('darwin'):
+        pytest.skip("Skipping on OSX - open issue regarding message size")
     client = EventHubClient.from_connection_string(connection_str, debug=True)
     sender = client.add_sender()
     try:
