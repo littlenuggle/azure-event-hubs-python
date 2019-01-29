@@ -122,7 +122,7 @@ class AsyncSender(Sender):
         except errors.TokenExpired as shutdown:
             log.info("AsyncSender disconnected due to token expiry. Shutting down.")
             error = EventHubError(str(shutdown), shutdown)
-            await self.close(exception=error)
+            await self.close_async(exception=error)
             raise error
         except (errors.LinkDetach, errors.ConnectionClose) as shutdown:
             if shutdown.action.retry and self.auto_reconnect:
